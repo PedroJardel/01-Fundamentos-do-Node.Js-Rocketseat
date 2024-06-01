@@ -36,7 +36,7 @@ export const routes = [
         method: 'DELETE',
         path: buildRoutePath('/users/:id'),
         handler: (req, res) => {
-            res.writeHead(201).end(`Deleted user from id: ${id}`)
+            res.writeHead(201).end('Deleted')
         }
     }
 ]
