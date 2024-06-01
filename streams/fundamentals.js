@@ -17,7 +17,7 @@
 // Readable Streams (Client => Servidor) / Writable Streams (Servidor => Client)
 
 // process.stdin.pipe(process.stdout)
-import { Readable } from 'node:stream'
+import { Readable, Writable, Transform } from 'node:stream'
 
 class OneToHundredStream extends Readable {
     index = 1
@@ -28,10 +28,27 @@ class OneToHundredStream extends Readable {
             if (i > 100) {
                 this.push(null)
             } else {
-                const buf = Buffer.from(String(i))
+                const buf = Buffer.from(String(i)) // Conversão para o tipo Buffer
                 this.push(buf)
             }
         }, 1000)
     }
 }
-new OneToHundredStream().pipe(process.stdout)
+
+class InverseNumberStream extends Transform {
+    _transform(chunk, encoding, callback) {
+        const transformed = Number(chunk.toString()) * -1
+        callback(null, Buffer.from(String(transformed))) // Conversão para tipo Buffer
+    }
+}
+
+class MultiplyByTenStream extends Writable {
+    _write(chunk, encoding, callback) {
+        console.log(Number(chunk.toString()) * 10)
+        callback()
+    }
+}
+
+new OneToHundredStream()
+.pipe(new InverseNumberStream()) // A Stream de transformação precisa obrigatóriamente que tenha uma stream de escrita e outra de leitura
+.pipe(new MultiplyByTenStream())
