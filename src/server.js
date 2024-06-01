@@ -1,5 +1,35 @@
 import http from 'node:http';
 import { json } from './middlewares/json.js';
+import { Database } from './middlewares/database.js';
+
+const database = new Database()
+
+const server = http.createServer(async (req, res) => {
+    const { method, url } = req
+
+    await json(req, res)
+
+    if(method === 'GET' && url === '/users') {
+        const users = database.select('users')
+
+        return res.end(JSON.stringify(users))
+    }
+
+    if(method === 'POST' && url === '/users') {
+        const { name, email } = req.body
+
+        const user = {
+            id: 1,
+            name: name,
+            email: email
+        }
+        database.insert('users', user)
+        return res.writeHead(201).end('Created')
+    }
+    return res.writeHead(404).end('Not Found')
+})
+
+server.listen(3333)
 
 // HTTP ( Métodos HTTP + URL)
 
@@ -24,29 +54,3 @@ import { json } from './middlewares/json.js';
 // Codes de Redirecionamento 300 - 399
 // Codes de Erro de requisição (client) 400 - 499
 // Codes de Server Error 500 - 599
-
-const users = []
-
-const server = http.createServer(async (req, res) => {
-    const { method, url } = req
-
-    await json(req, res)
-
-    if(method === 'GET' && url === '/users') {
-        return res.setHeader('Content-type', 'application/json')
-        .end(JSON.stringify(users))
-    }
-    if(method === 'POST' && url === '/users') {
-        const { name, email } = req.body
-
-        users.push({
-            id: 1,
-            name: name,
-            email: email
-        })
-        return res.writeHead(201).end('Created')
-    }
-    return res.writeHead(404).end('Not Found')
-})
-
-server.listen(3333)
