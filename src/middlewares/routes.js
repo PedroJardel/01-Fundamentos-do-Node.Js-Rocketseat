@@ -3,6 +3,10 @@ import { Database } from "./database.js"
 
 const database = new Database()
 
+// Query Parameters: http://localhost:3333/users?userId=1&name=Diego => (URL Stateful) => FILTROS, PAGINAÇÃO, NÃO-OBRIGATÓRIOS
+// Route Parameters: [GET | PUT | PATH | DELETE] http://localhost:3333/users/1 => (Identificação de recurso) => MÉTODO + URL/RECURSO + REQUEST BODY(PUT || PATH)
+// Request Body:[ POST] http://localhost:3333/users => (Envio de informações de  um formulário) => MÉTODO + URL + REQUEST BODY(Obrigatório)
+
 export const routes = [
     {
         method: 'GET',
@@ -25,6 +29,13 @@ export const routes = [
             }
             database.insert('users', user)
             return res.writeHead(201).end('Created')
+        }
+    },
+    {
+        method: 'DELETE',
+        path: '/users/:id',
+        handler: (req, res) => {
+            res.writeHead(201).end(`Deleted user from id ${id}`)
         }
     }
 ]
