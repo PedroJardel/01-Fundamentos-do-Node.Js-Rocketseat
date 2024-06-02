@@ -44,6 +44,15 @@ export class Database {
             this.#persist();
         }
     }
+
+    update(table, id, data) {
+        const rowIndex = this.#database[table].findIndex(row => row.id === id)
+
+        if(rowIndex > -1) {
+            this.#database[table][rowIndex] = { id, ...data }
+            this.#persist();
+        }
+    }
 }
 
 //  O uso da "#" garante que o método é privado e não pode ser acessado fora do arquivo que foi criado
